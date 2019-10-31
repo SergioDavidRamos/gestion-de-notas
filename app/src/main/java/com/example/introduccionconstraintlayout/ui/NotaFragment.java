@@ -1,17 +1,27 @@
-package com.example.introduccionconstraintlayout;
+package com.example.introduccionconstraintlayout.ui;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.introduccionconstraintlayout.NuevaNotaDialogFragment;
+import com.example.introduccionconstraintlayout.NuevaNotaDialogViewModel;
+import com.example.introduccionconstraintlayout.R;
+import com.example.introduccionconstraintlayout.db.entity.NotaEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +34,9 @@ public class NotaFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 2;
-    private NotasInteractionListener mListener;
-
-    private List<Nota> notaList;
+    private List<NotaEntity> notaList;
     private MyNotaRecyclerViewAdapter adapterNotas;
+    private NuevaNotaDialogViewModel notaViewModel;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -52,6 +61,9 @@ public class NotaFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+        //Indicamos que el fragmento tiene un menu de opciones propio
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -74,34 +86,49 @@ public class NotaFragment extends Fragment {
             }
 
             notaList = new ArrayList<>();
-            notaList.add(new Nota("Lista de compra", "Comprar pan tostado",true, android.R.color.holo_blue_light));
-            notaList.add(new Nota("Recordar", "he aparcado el coche en la calle almagro no olvidar pagar el parqumetr a la señora maria castro",false ,android.R.color.holo_green_light));
-            notaList.add(new Nota("Cumpleaños (fiesta)", "No olvidar las velas",true,android.R.color.holo_orange_light));
-
-
-            adapterNotas = new MyNotaRecyclerViewAdapter(notaList, mListener);
+//            notaList.add(new NotaEntity("Lista de compra", "Comprar pan tostado",true, android.R.color.holo_blue_light));
+//            notaList.add(new NotaEntity("Recordar", "he aparcado el coche en la calle almagro no olvidar pagar el parqumetr a la señora maria castro",false ,android.R.color.holo_green_light));
+//            notaList.add(new NotaEntity("Cumpleaños (fiesta)", "No olvidar las velas",true,android.R.color.holo_orange_light));
+//
+            adapterNotas = new MyNotaRecyclerViewAdapter(notaList, getActivity());
             recyclerView.setAdapter(adapterNotas);
+
+            lanzarViewModel();
         }
 
         return view;
     }
 
+    private void lanzarViewModel() {
+        notaViewModel = ViewModelProviders.of(getActivity())
+                .get(NuevaNotaDialogViewModel.class);
+        notaViewModel.getAllNotas().observe(getActivity(), new Observer<List<NotaEntity>>() {
+            @Override
+            public void onChanged(@Nullable List<NotaEntity> notaEntities) {
+                adapterNotas.setNuevasNotas(notaEntities);
+            }
+        });
+    }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof NotasInteractionListener) {
-            mListener = (NotasInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.options_menu_nota_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_add_nota:
+                mostrarDialogoNuevaNota();
+                return true;
+                default:
+                    return super.onOptionsItemSelected(item);
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    private void mostrarDialogoNuevaNota() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        NuevaNotaDialogFragment dialognuevaNota = new NuevaNotaDialogFragment();
+        dialognuevaNota.show(fm, "NuevaNotaDialogFragment");
     }
-
 }

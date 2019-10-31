@@ -1,4 +1,4 @@
-package com.example.introduccionconstraintlayout;
+package com.example.introduccionconstraintlayout.ui;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -6,9 +6,10 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-public class NotasActivity extends AppCompatActivity implements NotasInteractionListener{
+import com.example.introduccionconstraintlayout.R;
+
+public class DashboardActivity extends AppCompatActivity {
 
 
 
@@ -51,18 +52,4 @@ public class NotasActivity extends AppCompatActivity implements NotasInteraction
         getSupportFragmentManager().beginTransaction().replace(R.id.Contenedor, new NotaFragment()).commit();
     }
 
-    @Override
-    public void editNotaClick(Nota nota) {
-
-    }
-
-    @Override
-    public void eliminarNotaClick(Nota nota) {
-
-    }
-
-    @Override
-    public void favoritaNotaClick(Nota nota) {
-
-    }
 }

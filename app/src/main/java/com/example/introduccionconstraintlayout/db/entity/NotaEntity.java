@@ -1,17 +1,32 @@
-package com.example.introduccionconstraintlayout;
+package com.example.introduccionconstraintlayout.db.entity;
 
-public class Nota {
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 
-    private String titulo;
-    private String contenido;
-    private boolean favorita;
-    private int color;
+@Entity(tableName = "notas")
+public class NotaEntity {
+    @PrimaryKey(autoGenerate = true)
+    public int id;
 
-    public Nota(String titulo, String contenido, boolean favorita, int color) {
+    public String titulo;
+    public String contenido;
+    public boolean favorita;
+    public String color;
+
+    public NotaEntity( String titulo, String contenido, boolean favorita, String color) {
+
         this.titulo = titulo;
         this.contenido = contenido;
         this.favorita = favorita;
         this.color = color;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -38,11 +53,11 @@ public class Nota {
         this.favorita = favorita;
     }
 
-    public int getColor() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(int color) {
+    public void setColor(String color) {
         this.color = color;
     }
 }
